@@ -1,0 +1,703 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Components of Multimedia</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=JetBrains+Mono:wght@400;600&family=Public+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout concept: the page is laid out like an editing timeline. Five tracks (one per
+   component) run through the hero, and each section below gives its track colour and a
+   small working demo of that medium: type, image, sound, video frames, animation. */
+:root {
+  --bg: #F2F4F8;
+  --surface: #FFFFFF;
+  --surface2: #E8ECF3;
+  --fg: #121722;
+  --muted: #556073;
+  --line: #D3DAE6;
+  --text: #2F5BEA;
+  --image: #D93A73;
+  --audio: #A86C00;
+  --video: #0B8A74;
+  --anim: #6D3FD6;
+  --stage: #0B1020;
+  --stage-fg: #FFFFFF;
+  --font-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Public Sans", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0E1117; --surface: #161B24; --surface2: #1D2430; --fg: #E8ECF2; --muted: #9AA5B5; --line: #2A3342;
+    --text: #7D9BFF; --image: #FF7FA8; --audio: #F5BE4A; --video: #3CCFB3; --anim: #A98BFF;
+    --stage: #070A12; --stage-fg: #FFFFFF;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0E1117; --surface: #161B24; --surface2: #1D2430; --fg: #E8ECF2; --muted: #9AA5B5; --line: #2A3342;
+  --text: #7D9BFF; --image: #FF7FA8; --audio: #F5BE4A; --video: #3CCFB3; --anim: #A98BFF;
+  --stage: #070A12; --stage-fg: #FFFFFF;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 72px; }
+body {
+  background: var(--bg); color: var(--fg);
+  font-family: var(--font-body); font-size: 16px; line-height: 1.6;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 48px;
+}
+body::before {
+  content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px);
+  z-index: 30; background: var(--bg);
+}
+.wrap { max-width: 1080px; margin: 0 auto; }
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; line-height: 1.05; letter-spacing: -0.02em; }
+p { margin: 0; }
+a { color: inherit; }
+:focus-visible { outline: 3px solid var(--text); outline-offset: 2px; border-radius: 4px; }
+
+/* top bar */
+.bar {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20;
+  background: var(--bg); border-bottom: 1px solid var(--line);
+  margin-inline: calc(-1 * max(16px, env(safe-area-inset-left, 0px)));
+  padding-inline: max(16px, env(safe-area-inset-left, 0px));
+}
+.bar-in { max-width: 1080px; margin: 0 auto; display: flex; align-items: center; gap: 12px; min-height: 56px; }
+.brand { font-family: var(--font-mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; font-weight: 600; white-space: nowrap; }
+.nav { display: flex; gap: 4px; margin-left: auto; overflow-x: auto; scrollbar-width: none; min-width: 0; }
+.nav::-webkit-scrollbar { display: none; }
+.nav a {
+  text-decoration: none; font-size: 13px; font-weight: 500; color: var(--muted);
+  padding: 6px 10px; border-radius: 6px; white-space: nowrap;
+}
+.nav a:hover { color: var(--fg); background: var(--surface2); }
+.theme-btn {
+  flex: none; font: inherit; font-size: 12px; font-family: var(--font-mono); color: var(--fg);
+  background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 6px 10px; cursor: pointer;
+}
+.theme-btn:hover { background: var(--surface2); }
+
+/* hero */
+.hero { padding-block: 56px 40px; }
+.eyebrow { font-family: var(--font-mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.hero h1 { font-size: clamp(44px, 9vw, 104px); font-weight: 800; margin-top: 14px; max-width: 12ch; }
+.hero .by { margin-top: 20px; font-size: 18px; max-width: 52ch; }
+.hero .by strong { font-weight: 600; }
+.hero .by span { color: var(--muted); }
+
+.timeline { margin-top: 40px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 18px; }
+.tl-head { display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 11px; color: var(--muted); padding-left: 84px; margin-bottom: 8px; }
+.tl-rows { position: relative; display: grid; gap: 8px; }
+.tl-row { display: grid; grid-template-columns: 76px minmax(0, 1fr); gap: 8px; align-items: center; }
+.tl-label { font-family: var(--font-mono); font-size: 11px; font-weight: 600; letter-spacing: .08em; }
+.tl-track { position: relative; height: 26px; background: var(--surface2); border-radius: 5px; overflow: hidden; }
+.clip { position: absolute; top: 3px; bottom: 3px; border-radius: 4px; background: var(--c); opacity: .9; }
+.playhead {
+  position: absolute; top: -6px; bottom: -6px; left: 84px; width: 2px; background: var(--fg); border-radius: 1px;
+  animation: sweep 14s linear infinite;
+}
+.playhead::before { content: ""; position: absolute; top: -2px; left: -4px; width: 10px; height: 8px; background: var(--fg); clip-path: polygon(0 0, 100% 0, 50% 100%); }
+@keyframes sweep { from { left: 84px; } to { left: 100%; } }
+.t-text { --c: var(--text); } .t-image { --c: var(--image); } .t-audio { --c: var(--audio); } .t-video { --c: var(--video); } .t-anim { --c: var(--anim); }
+.tl-label { color: var(--c); }
+
+.facts { margin: 28px 0 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 18px 28px; }
+.facts div { min-width: 0; }
+.facts dt { font-family: var(--font-mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.facts dd { margin: 2px 0 0; font-weight: 500; }
+
+/* intro */
+.intro { padding-block: 56px; border-top: 1px solid var(--line); display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 40px; }
+.intro h2 { font-size: clamp(30px, 5vw, 48px); font-weight: 800; }
+.intro .big { font-size: 20px; margin-top: 16px; }
+.intro ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 12px; align-content: start; }
+.intro li { padding-left: 18px; position: relative; }
+.intro li::before { content: ""; position: absolute; left: 0; top: .7em; width: 8px; height: 2px; background: var(--fg); }
+.five { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; margin-top: 8px; }
+.five a {
+  text-decoration: none; display: block; padding: 14px; border-radius: 10px; background: var(--surface);
+  border: 1px solid var(--line); border-top: 4px solid var(--c);
+}
+.five a:hover { background: var(--surface2); }
+.five b { display: block; font-family: var(--font-mono); font-size: 11px; color: var(--c); letter-spacing: .08em; }
+.five strong { display: block; font-family: var(--font-display); font-size: 18px; margin-top: 4px; }
+.five span { display: block; font-size: 13px; color: var(--muted); margin-top: 4px; line-height: 1.4; }
+
+/* component sections */
+.comp { padding-block: 56px; border-top: 1px solid var(--line); display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 40px; align-items: start; }
+.comp .kicker { font-family: var(--font-mono); font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--c); font-weight: 600; }
+.comp h2 { font-size: clamp(38px, 6vw, 64px); font-weight: 800; margin-top: 8px; }
+.comp .lead { font-size: 20px; margin-top: 14px; }
+.comp ul { margin: 18px 0 0; padding: 0; list-style: none; display: grid; gap: 10px; }
+.comp li { padding-left: 18px; position: relative; color: var(--fg); }
+.comp li::before { content: ""; position: absolute; left: 0; top: .7em; width: 8px; height: 2px; background: var(--c); }
+.example { margin-top: 20px; font-family: var(--font-mono); font-size: 12px; color: var(--muted); letter-spacing: .02em; }
+.example b { color: var(--c); font-weight: 600; letter-spacing: .08em; }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 18px; }
+.tag { font-family: var(--font-mono); font-size: 12px; font-weight: 600; padding: 3px 9px; border-radius: 999px; border: 1px solid var(--c); color: var(--c); }
+.c-text { --c: var(--text); } .c-image { --c: var(--image); } .c-audio { --c: var(--audio); } .c-video { --c: var(--video); } .c-anim { --c: var(--anim); }
+
+.demo { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px; min-width: 0; }
+.demo-cap { font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
+.controls { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; align-items: center; }
+.btn {
+  font: inherit; font-size: 14px; font-weight: 500; color: var(--fg); background: var(--surface);
+  border: 1px solid var(--line); border-radius: 8px; padding: 7px 13px; cursor: pointer;
+}
+.btn:hover { background: var(--surface2); }
+.btn[aria-pressed="true"], .btn.on { background: color-mix(in srgb, var(--c) 16%, var(--surface)); border-color: var(--c); }
+.btn.solid { background: var(--c); border-color: var(--c); color: var(--bg); font-weight: 600; }
+.btn.solid:hover { opacity: .9; }
+.readout { font-family: var(--font-mono); font-size: 12px; color: var(--muted); }
+label.range { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--muted); }
+input[type="range"] { accent-color: var(--c); width: 140px; max-width: 100%; }
+.note { margin-top: 12px; font-size: 14px; color: var(--muted); min-height: 3em; }
+.note strong { color: var(--fg); }
+
+/* text demo */
+.stage { position: relative; aspect-ratio: 16 / 9; border-radius: 10px; overflow: hidden; background: linear-gradient(160deg, #123B5C, #0B1020 70%); color: var(--stage-fg); }
+.stage .sun { position: absolute; right: 12%; top: 18%; width: 18%; aspect-ratio: 1; border-radius: 50%; background: #FFC857; box-shadow: 0 0 0 10px rgba(255,200,87,.18), 0 0 0 22px rgba(255,200,87,.08); }
+.stage .leaf { position: absolute; left: 10%; bottom: 14%; width: 22%; aspect-ratio: 1; background: #3FBF7F; border-radius: 0 100% 0 100%; transform: rotate(-12deg); }
+.l-label { position: absolute; left: 4%; top: 6%; font-family: var(--font-mono); font-size: clamp(9px, 1.7vw, 12px); letter-spacing: .1em; text-transform: uppercase; background: var(--text); color: #fff; padding: 3px 8px; border-radius: 4px; }
+.l-title { position: absolute; left: 4%; top: 22%; font-family: var(--font-display); font-weight: 800; font-size: clamp(20px, 4.6vw, 40px); line-height: 1; max-width: 12ch; }
+.l-sub { position: absolute; left: 50%; bottom: 6%; transform: translateX(-50%); width: 88%; text-align: center; font-size: clamp(11px, 2vw, 16px); background: rgba(0,0,0,.65); padding: 5px 10px; border-radius: 4px; }
+.stage [hidden] { display: none; }
+
+/* image demo */
+.diagram { width: 100%; height: auto; display: block; }
+.diagram .link { stroke: var(--muted); stroke-width: 2; fill: none; }
+.diagram .part rect { fill: var(--surface2); stroke: var(--line); stroke-width: 2; transition: fill .2s, stroke .2s; }
+.diagram .part text { fill: var(--fg); font-family: var(--font-body); font-size: 15px; font-weight: 600; text-anchor: middle; }
+.diagram .part.on rect { fill: color-mix(in srgb, var(--image) 18%, var(--surface)); stroke: var(--image); }
+
+/* audio demo */
+canvas.wave { width: 100%; height: 150px; display: block; background: var(--surface2); border-radius: 10px; }
+
+/* video demo */
+canvas.screen { width: 100%; aspect-ratio: 16 / 9; display: block; background: var(--surface2); border-radius: 10px; }
+.strip { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 4px; margin-top: 10px; }
+.strip button { padding: 0; border: 2px solid var(--line); border-radius: 4px; background: var(--surface2); cursor: pointer; overflow: hidden; line-height: 0; }
+.strip button.on { border-color: var(--video); }
+.strip canvas { width: 100%; height: auto; aspect-ratio: 16 / 9; display: block; }
+
+/* animation demo */
+.orbit { position: relative; width: min(100%, 380px); aspect-ratio: 1; margin: 0 auto; background: var(--stage); border-radius: 12px; overflow: hidden; --speed: 1; }
+.orbit .sun2 { position: absolute; left: 50%; top: 50%; width: 11%; aspect-ratio: 1; transform: translate(-50%, -50%); border-radius: 50%; background: #FFC857; box-shadow: 0 0 24px 6px rgba(255,200,87,.5); }
+.ring { position: absolute; left: 50%; top: 50%; aspect-ratio: 1; border: 1px dashed rgba(255,255,255,.22); border-radius: 50%; transform: translate(-50%, -50%) rotate(0deg); animation: spin calc(var(--t) * 1s / var(--speed)) linear infinite; }
+.ring i { position: absolute; left: 50%; top: 0; width: var(--s); aspect-ratio: 1; margin-left: calc(var(--s) / -2); margin-top: calc(var(--s) / -2); border-radius: 50%; background: var(--p); }
+.r1 { width: 30%; --t: 4;  --s: 6%; --p: #C9B8A6; }
+.r2 { width: 48%; --t: 7;  --s: 8%; --p: #E8B96B; }
+.r3 { width: 66%; --t: 10; --s: 8.5%; --p: #4FA3FF; }
+.r4 { width: 86%; --t: 15; --s: 7%; --p: #E8644A; }
+@keyframes spin { to { transform: translate(-50%, -50%) rotate(360deg); } }
+.orbit.paused .ring { animation-play-state: paused; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 14px; justify-content: center; margin-top: 12px; font-size: 12px; color: var(--muted); }
+.legend span::before { content: ""; display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--p); margin-right: 6px; }
+
+/* uses / benefits / recap */
+.band { padding-block: 56px; border-top: 1px solid var(--line); }
+.band h2 { font-size: clamp(30px, 5vw, 48px); font-weight: 800; }
+.band .sub { color: var(--muted); margin-top: 8px; max-width: 56ch; }
+.cards { margin-top: 28px; display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 18px; min-width: 0; }
+.card h3 { font-size: 20px; font-weight: 800; }
+.card p { margin-top: 8px; color: var(--muted); font-size: 15px; }
+.uses .card { border-top: 4px solid var(--c); }
+.benefits { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.recap-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
+.recap-row div { flex: 1 1 140px; border-radius: 10px; padding: 14px; background: color-mix(in srgb, var(--c) 14%, var(--surface)); border: 1px solid color-mix(in srgb, var(--c) 40%, var(--line)); }
+.recap-row b { display: block; font-family: var(--font-mono); font-size: 12px; letter-spacing: .1em; color: var(--c); }
+.recap-row span { display: block; font-family: var(--font-display); font-size: 22px; font-weight: 800; margin-top: 2px; }
+.closing { margin-top: 24px; font-size: 20px; max-width: 46ch; }
+
+.thanks { padding-block: 72px 24px; border-top: 1px solid var(--line); }
+.thanks h2 { font-size: clamp(52px, 12vw, 130px); font-weight: 800; }
+.thanks .q { font-family: var(--font-display); font-size: clamp(22px, 4vw, 34px); margin-top: 10px; color: var(--muted); }
+.thanks .who { margin-top: 28px; }
+.thanks .who strong { font-weight: 600; }
+.thanks .who span { color: var(--muted); display: block; font-size: 14px; }
+
+@media (max-width: 820px) {
+  .intro, .comp { grid-template-columns: minmax(0, 1fr); gap: 28px; }
+  .five { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .benefits { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .brand { display: none; }
+  .nav { margin-left: 0; }
+}
+@media (max-width: 520px) {
+  .benefits { grid-template-columns: minmax(0, 1fr); }
+  .tl-row { grid-template-columns: 56px minmax(0, 1fr); }
+  .tl-head { padding-left: 64px; }
+  .playhead { left: 64px; }
+  @keyframes sweep { from { left: 64px; } to { left: 100%; } }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .playhead { animation: none; left: 45%; }
+  .ring { animation: none; }
+}
+</style>
+
+<div class="wrap">
+  <header class="bar">
+    <div class="bar-in">
+      <span class="brand">Multimedia</span>
+      <nav class="nav" aria-label="Sections">
+        <a href="#text">Text</a>
+        <a href="#images">Images</a>
+        <a href="#audio">Audio</a>
+        <a href="#video">Video</a>
+        <a href="#animation">Animation</a>
+        <a href="#uses">Uses</a>
+        <a href="#benefits">Benefits</a>
+      </nav>
+      <button class="theme-btn" id="themeBtn" type="button" aria-label="Switch light or dark theme">Theme</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" id="top">
+      <p class="eyebrow">Applied Computing &middot; First Semester &middot; BCA</p>
+      <h1>Components of Multimedia</h1>
+      <p class="by"><strong>Presented by Muneeb Fayaz</strong><br><span>Roll No. 2606038 &middot; Department of Bachelor of Computer Applications</span></p>
+
+      <div class="timeline" aria-label="Five tracks of multimedia: text, image, audio, video and animation">
+        <div class="tl-head"><span>00:00</span><span>One project, five tracks</span><span>end</span></div>
+        <div class="tl-rows">
+          <div class="tl-row t-text"><span class="tl-label">TEXT</span><div class="tl-track"><span class="clip" style="left:2%;width:22%"></span><span class="clip" style="left:30%;width:12%"></span><span class="clip" style="left:62%;width:30%"></span></div></div>
+          <div class="tl-row t-image"><span class="tl-label">IMAGE</span><div class="tl-track"><span class="clip" style="left:8%;width:18%"></span><span class="clip" style="left:44%;width:26%"></span><span class="clip" style="left:80%;width:16%"></span></div></div>
+          <div class="tl-row t-audio"><span class="tl-label">AUDIO</span><div class="tl-track"><span class="clip" style="left:0;width:48%"></span><span class="clip" style="left:52%;width:44%"></span></div></div>
+          <div class="tl-row t-video"><span class="tl-label">VIDEO</span><div class="tl-track"><span class="clip" style="left:14%;width:34%"></span><span class="clip" style="left:56%;width:34%"></span></div></div>
+          <div class="tl-row t-anim"><span class="tl-label">ANIMATION</span><div class="tl-track"><span class="clip" style="left:4%;width:14%"></span><span class="clip" style="left:36%;width:20%"></span><span class="clip" style="left:70%;width:24%"></span></div></div>
+          <span class="playhead" aria-hidden="true"></span>
+        </div>
+      </div>
+
+      <dl class="facts">
+        <div><dt>Subject</dt><dd>Applied Computing</dd></div>
+        <div><dt>Semester</dt><dd>1st Semester</dd></div>
+        <div><dt>Teacher In-Charge</dt><dd>Dr. Rafiya</dd></div>
+        <div><dt>College</dt><dd>Amar Singh College, Srinagar</dd></div>
+        <div><dt>University</dt><dd>Cluster University of Srinagar</dd></div>
+        <div><dt>Department</dt><dd>BCA</dd></div>
+      </dl>
+    </section>
+
+    <section class="intro" id="what">
+      <div>
+        <p class="eyebrow">Multimedia basics</p>
+        <h2 style="margin-top:10px">What is Multimedia?</h2>
+        <p class="big">Multimedia combines different forms of media to communicate information.</p>
+      </div>
+      <ul>
+        <li>It can include text, pictures, sound, video and animation.</li>
+        <li>It makes learning and communication more engaging.</li>
+        <li>It is used in education, entertainment, business and websites.</li>
+      </ul>
+      <div class="five">
+        <a href="#text" class="t-text"><b>01</b><strong>Text</strong><span>Words and characters</span></a>
+        <a href="#images" class="t-image"><b>02</b><strong>Images</strong><span>Photos, drawings, graphics</span></a>
+        <a href="#audio" class="t-audio"><b>03</b><strong>Audio</strong><span>Speech, music, sound effects</span></a>
+        <a href="#video" class="t-video"><b>04</b><strong>Video</strong><span>Moving real-world visuals</span></a>
+        <a href="#animation" class="t-anim"><b>05</b><strong>Animation</strong><span>Created movement and effects</span></a>
+      </div>
+      <p style="grid-column:1/-1;color:var(--muted)">Together, these elements create a richer multimedia experience. Each section below has a small demo you can try.</p>
+    </section>
+
+    <!-- 01 TEXT -->
+    <section class="comp c-text" id="text">
+      <div>
+        <p class="kicker">Component 01</p>
+        <h2>Text</h2>
+        <p class="lead">The written information in a multimedia project.</p>
+        <ul>
+          <li>Includes titles, headings, labels and paragraphs.</li>
+          <li>Helps explain ideas clearly and accurately.</li>
+          <li>Examples: captions, menus, instructions and subtitles.</li>
+        </ul>
+        <p class="example"><b>EXAMPLE</b> A title and captions in an educational video</p>
+      </div>
+      <div class="demo">
+        <p class="demo-cap">Try it: layers of text on a video frame</p>
+        <div class="stage" role="img" aria-label="Mock educational video frame with a title, a label and a subtitle">
+          <div class="sun"></div><div class="leaf"></div>
+          <span class="l-label" id="layerLabel">Chapter 2 &middot; Photosynthesis</span>
+          <span class="l-title" id="layerTitle">How Plants Make Food</span>
+          <span class="l-sub" id="layerSub">Plants use sunlight, water and carbon dioxide.</span>
+        </div>
+        <div class="controls" id="textControls">
+          <button class="btn" type="button" aria-pressed="true" data-layer="layerTitle">Title</button>
+          <button class="btn" type="button" aria-pressed="true" data-layer="layerLabel">Label</button>
+          <button class="btn" type="button" aria-pressed="true" data-layer="layerSub">Subtitle</button>
+        </div>
+        <p class="note" id="textNote">Turn the layers off and the frame still looks nice, but it no longer explains anything. Text carries the exact meaning.</p>
+      </div>
+    </section>
+
+    <!-- 02 IMAGES -->
+    <section class="comp c-image" id="images">
+      <div>
+        <p class="kicker">Component 02</p>
+        <h2>Images &amp; Graphics</h2>
+        <p class="lead">Still visuals that help people understand information.</p>
+        <ul>
+          <li>Includes photographs, illustrations, icons, charts and diagrams.</li>
+          <li>Makes content attractive and easier to remember.</li>
+          <li>Common formats include JPEG, PNG and SVG.</li>
+        </ul>
+        <div class="tags"><span class="tag">JPEG</span><span class="tag">PNG</span><span class="tag">SVG</span></div>
+        <p class="example"><b>EXAMPLE</b> A diagram showing parts of a computer</p>
+      </div>
+      <div class="demo">
+        <p class="demo-cap">Try it: parts of a computer (this diagram is an SVG)</p>
+        <svg class="diagram" viewBox="0 0 520 280" role="img" aria-label="Diagram of a computer: input, CPU, output, memory and storage">
+          <path class="link" d="M130 140 H200"/><path class="link" d="M320 140 H390"/>
+          <path class="link" d="M260 80 V110"/><path class="link" d="M260 170 V200"/>
+          <g class="part" data-part="input"><rect x="20" y="110" width="110" height="60" rx="8"/><text x="75" y="146">Input</text></g>
+          <g class="part" data-part="cpu"><rect x="200" y="110" width="120" height="60" rx="8"/><text x="260" y="146">CPU</text></g>
+          <g class="part" data-part="output"><rect x="390" y="110" width="110" height="60" rx="8"/><text x="445" y="146">Output</text></g>
+          <g class="part" data-part="memory"><rect x="200" y="20" width="120" height="60" rx="8"/><text x="260" y="56">Memory</text></g>
+          <g class="part" data-part="storage"><rect x="200" y="200" width="120" height="60" rx="8"/><text x="260" y="236">Storage</text></g>
+        </svg>
+        <div class="controls" id="partControls">
+          <button class="btn" type="button" data-part="input">Input</button>
+          <button class="btn" type="button" data-part="cpu">CPU</button>
+          <button class="btn" type="button" data-part="memory">Memory</button>
+          <button class="btn" type="button" data-part="storage">Storage</button>
+          <button class="btn" type="button" data-part="output">Output</button>
+        </div>
+        <p class="note" id="partNote">Pick a part. A diagram explains in one look what a paragraph would need many lines to say.</p>
+      </div>
+    </section>
+
+    <!-- 03 AUDIO -->
+    <section class="comp c-audio" id="audio">
+      <div>
+        <p class="kicker">Component 03</p>
+        <h2>Audio</h2>
+        <p class="lead">Sound that adds meaning and emotion.</p>
+        <ul>
+          <li>Includes speech, narration, music and sound effects.</li>
+          <li>Can guide attention and make a presentation lively.</li>
+          <li>Common formats include MP3, WAV and AAC.</li>
+        </ul>
+        <div class="tags"><span class="tag">MP3</span><span class="tag">WAV</span><span class="tag">AAC</span></div>
+        <p class="example"><b>EXAMPLE</b> Voice-over explaining a science concept</p>
+      </div>
+      <div class="demo">
+        <p class="demo-cap">Try it: sound waves (turn your volume up a little)</p>
+        <canvas class="wave" id="wave" aria-label="Waveform of the sound being played"></canvas>
+        <div class="controls">
+          <button class="btn solid" type="button" id="playTone">Play a note</button>
+          <button class="btn solid" type="button" id="playScale">Play a scale</button>
+        </div>
+        <div class="controls" id="waveControls" role="group" aria-label="Wave shape">
+          <button class="btn" type="button" aria-pressed="true" data-wave="sine">Sine</button>
+          <button class="btn" type="button" aria-pressed="false" data-wave="triangle">Triangle</button>
+          <button class="btn" type="button" aria-pressed="false" data-wave="square">Square</button>
+        </div>
+        <p class="note" id="waveNote">Sound is a wave. Changing its shape changes how it feels to the ear, from soft (sine) to buzzy (square).</p>
+      </div>
+    </section>
+
+    <!-- 04 VIDEO -->
+    <section class="comp c-video" id="video">
+      <div>
+        <p class="kicker">Component 04</p>
+        <h2>Video</h2>
+        <p class="lead">A sequence of moving images, often with sound.</p>
+        <ul>
+          <li>Shows real events, demonstrations and stories.</li>
+          <li>Useful for tutorials, news, films and online classes.</li>
+          <li>Common formats include MP4, MOV and WebM.</li>
+        </ul>
+        <div class="tags"><span class="tag">MP4</span><span class="tag">MOV</span><span class="tag">WebM</span></div>
+        <p class="example"><b>EXAMPLE</b> A short video demonstrating an experiment</p>
+      </div>
+      <div class="demo">
+        <p class="demo-cap">Try it: frame &rarr; motion</p>
+        <canvas class="screen" id="screen" width="640" height="360" aria-label="A ball moving across the screen, drawn frame by frame"></canvas>
+        <div class="strip" id="strip" aria-label="Frames of the clip"></div>
+        <div class="controls">
+          <button class="btn solid" type="button" id="vidPlay">Pause</button>
+          <label class="range" for="fps">Speed <input type="range" id="fps" min="1" max="12" value="8"> <span class="readout" id="fpsOut">8 fps</span></label>
+        </div>
+        <p class="note">A video is a row of still frames shown quickly. Slow the speed down and you can see the single frames the motion is made from.</p>
+      </div>
+    </section>
+
+    <!-- 05 ANIMATION -->
+    <section class="comp c-anim" id="animation">
+      <div>
+        <p class="kicker">Component 05</p>
+        <h2>Animation</h2>
+        <p class="lead">The illusion of movement created from images or objects.</p>
+        <ul>
+          <li>Can be 2D, 3D or motion graphics.</li>
+          <li>Explains processes that are difficult to film in real life.</li>
+          <li>Used in cartoons, simulations, games and advertisements.</li>
+        </ul>
+        <div class="tags"><span class="tag">2D</span><span class="tag">3D</span><span class="tag">Motion</span></div>
+        <p class="example"><b>EXAMPLE</b> An animated model of the solar system</p>
+      </div>
+      <div class="demo">
+        <p class="demo-cap">Try it: a simple solar system model</p>
+        <div class="orbit" id="orbit" role="img" aria-label="Animated model of four planets orbiting the sun">
+          <div class="sun2"></div>
+          <div class="ring r1"><i></i></div>
+          <div class="ring r2"><i></i></div>
+          <div class="ring r3"><i></i></div>
+          <div class="ring r4"><i></i></div>
+        </div>
+        <div class="legend">
+          <span style="--p:#C9B8A6">Mercury</span><span style="--p:#E8B96B">Venus</span><span style="--p:#4FA3FF">Earth</span><span style="--p:#E8644A">Mars</span>
+        </div>
+        <div class="controls">
+          <button class="btn solid" type="button" id="orbitToggle">Pause</button>
+          <label class="range" for="speed">Speed <input type="range" id="speed" min="0.5" max="4" step="0.5" value="1"> <span class="readout" id="speedOut">1&times;</span></label>
+        </div>
+        <p class="note">Filming real planets is impossible, so animation shows the idea instead. Inner planets circle faster than outer ones.</p>
+      </div>
+    </section>
+
+    <section class="band uses" id="uses">
+      <h2>Where is Multimedia Used?</h2>
+      <div class="cards">
+        <div class="card" style="--c:var(--text)"><h3>Education</h3><p>Online classes, tutorials and e-learning</p></div>
+        <div class="card" style="--c:var(--image)"><h3>Entertainment</h3><p>Films, music, animation and video games</p></div>
+        <div class="card" style="--c:var(--audio)"><h3>Business</h3><p>Presentations, product demos and advertising</p></div>
+        <div class="card" style="--c:var(--video)"><h3>Healthcare</h3><p>Medical training and visual explanations</p></div>
+        <div class="card" style="--c:var(--anim)"><h3>Web &amp; Apps</h3><p>Interactive websites and mobile applications</p></div>
+      </div>
+    </section>
+
+    <section class="band" id="benefits">
+      <h2>Benefits of Multimedia</h2>
+      <div class="cards benefits">
+        <div class="card"><h3>Clearer communication</h3><p>Combines words, visuals and sound.</p></div>
+        <div class="card"><h3>Better engagement</h3><p>Keeps audiences interested.</p></div>
+        <div class="card"><h3>Easy learning</h3><p>Makes complex ideas easier to understand.</p></div>
+        <div class="card"><h3>More memorable</h3><p>Visual and audio cues support recall.</p></div>
+        <div class="card"><h3>Flexible delivery</h3><p>Works across classrooms, websites and apps.</p></div>
+        <div class="card"><h3>Interactive potential</h3><p>Can let users explore and respond.</p></div>
+      </div>
+    </section>
+
+    <section class="band" id="recap">
+      <h2>Quick Recap</h2>
+      <p class="sub">A multimedia project can combine:</p>
+      <div class="recap-row">
+        <div class="t-text"><b>TEXT</b><span>Words</span></div>
+        <div class="t-image"><b>IMAGES</b><span>Visuals</span></div>
+        <div class="t-audio"><b>AUDIO</b><span>Sound</span></div>
+        <div class="t-video"><b>VIDEO</b><span>Moving scenes</span></div>
+        <div class="t-anim"><b>ANIMATION</b><span>Created motion</span></div>
+      </div>
+      <p class="closing">The best multimedia uses the right media for the audience and purpose.</p>
+    </section>
+
+    <section class="thanks">
+      <h2>Thank you!</h2>
+      <p class="q">Any questions?</p>
+      <p class="who"><strong>Presented by Muneeb Fayaz</strong>
+        <span>Roll No. 2606038 &middot; BCA &middot; Applied Computing, 1st Semester</span>
+        <span>Teacher In-Charge: Dr. Rafiya</span>
+        <span>Amar Singh College, Srinagar &middot; Affiliated with Cluster University of Srinagar</span>
+      </p>
+    </section>
+  </main>
+</div>
+
+<script>
+(function () {
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function $(id) { return document.getElementById(id); }
+  function css(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+
+  /* theme toggle */
+  $('themeBtn').addEventListener('click', function () {
+    var root = document.documentElement;
+    var dark = root.getAttribute('data-theme') === 'dark' ||
+      (!root.getAttribute('data-theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    root.setAttribute('data-theme', dark ? 'light' : 'dark');
+    redrawAll();
+  });
+  if (window.matchMedia) {
+    var mq = window.matchMedia('(prefers-color-scheme: dark)');
+    if (mq.addEventListener) mq.addEventListener('change', function () { redrawAll(); });
+  }
+
+  /* text layers */
+  document.querySelectorAll('#textControls .btn').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var on = b.getAttribute('aria-pressed') !== 'true';
+      b.setAttribute('aria-pressed', on ? 'true' : 'false');
+      $(b.dataset.layer).hidden = !on;
+      var left = document.querySelectorAll('#textControls .btn[aria-pressed="true"]').length;
+      $('textNote').textContent = left === 0
+        ? 'No text left. The picture shows a sun and a leaf, but nobody knows what the video is about.'
+        : left === 3
+        ? 'Title, label and subtitle all work together. Turn some off to see what each one adds.'
+        : 'Each text layer adds something different: the title names the topic, the label gives context, the subtitle explains.';
+    });
+  });
+
+  /* computer parts */
+  var parts = {
+    input: 'Input devices such as a keyboard, mouse or microphone send data into the computer.',
+    cpu: 'The CPU is the brain. It follows instructions and does the calculations.',
+    memory: 'Memory (RAM) holds the data and programs that are in use right now.',
+    storage: 'Storage keeps files for a long time, even when the computer is switched off.',
+    output: 'Output devices such as a screen, speakers or printer show the results.'
+  };
+  function pickPart(name) {
+    document.querySelectorAll('.diagram .part').forEach(function (g) { g.classList.toggle('on', g.dataset.part === name); });
+    document.querySelectorAll('#partControls .btn').forEach(function (b) { b.classList.toggle('on', b.dataset.part === name); });
+    $('partNote').textContent = parts[name];
+  }
+  document.querySelectorAll('#partControls .btn').forEach(function (b) { b.addEventListener('click', function () { pickPart(b.dataset.part); }); });
+  document.querySelectorAll('.diagram .part').forEach(function (g) { g.addEventListener('click', function () { pickPart(g.dataset.part); }); });
+
+  /* audio */
+  var actx = null, analyser = null, wave = 'sine', activeUntil = 0;
+  var wc = $('wave'), wg = wc.getContext('2d');
+  function sizeWave() {
+    var r = wc.getBoundingClientRect(), d = window.devicePixelRatio || 1;
+    wc.width = Math.max(1, Math.round(r.width * d)); wc.height = Math.max(1, Math.round(r.height * d));
+  }
+  function ensureAudio() {
+    if (!actx) {
+      var AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return false;
+      actx = new AC();
+      analyser = actx.createAnalyser(); analyser.fftSize = 1024;
+      analyser.connect(actx.destination);
+    }
+    if (actx.state === 'suspended') actx.resume();
+    return true;
+  }
+  function note(freq, start, dur) {
+    var o = actx.createOscillator(), g = actx.createGain();
+    o.type = wave; o.frequency.value = freq;
+    g.gain.setValueAtTime(0.0001, start);
+    g.gain.linearRampToValueAtTime(0.2, start + 0.03);
+    g.gain.exponentialRampToValueAtTime(0.0001, start + dur);
+    o.connect(g); g.connect(analyser);
+    o.start(start); o.stop(start + dur + 0.05);
+  }
+  $('playTone').addEventListener('click', function () {
+    if (!ensureAudio()) { $('waveNote').textContent = 'This browser cannot play generated sound.'; return; }
+    var t = actx.currentTime + 0.02;
+    note(440, t, 1.2); activeUntil = t + 1.3;
+  });
+  $('playScale').addEventListener('click', function () {
+    if (!ensureAudio()) { $('waveNote').textContent = 'This browser cannot play generated sound.'; return; }
+    var t = actx.currentTime + 0.02, f = [261.63, 293.66, 329.63, 349.23, 392, 440, 493.88, 523.25];
+    f.forEach(function (hz, i) { note(hz, t + i * 0.3, 0.45); });
+    activeUntil = t + f.length * 0.3 + 0.3;
+  });
+  document.querySelectorAll('#waveControls .btn').forEach(function (b) {
+    b.addEventListener('click', function () {
+      wave = b.dataset.wave;
+      document.querySelectorAll('#waveControls .btn').forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+      drawWave();
+    });
+  });
+  function idleY(x, w, h) {
+    var cycles = wave === 'square' ? 3 : 3, p = (x / w) * cycles, f = p - Math.floor(p), v;
+    if (wave === 'sine') v = Math.sin(p * 2 * Math.PI);
+    else if (wave === 'triangle') v = 1 - 4 * Math.abs(f - 0.5) ;
+    else v = f < 0.5 ? 1 : -1;
+    return h / 2 - v * h * 0.28;
+  }
+  function drawWave() {
+    var w = wc.width, h = wc.height, d = window.devicePixelRatio || 1;
+    wg.clearRect(0, 0, w, h);
+    wg.strokeStyle = css('--line'); wg.lineWidth = 1 * d;
+    wg.beginPath(); wg.moveTo(0, h / 2); wg.lineTo(w, h / 2); wg.stroke();
+    wg.strokeStyle = css('--audio'); wg.lineWidth = 2.5 * d; wg.lineJoin = 'round';
+    wg.beginPath();
+    var live = actx && analyser && actx.currentTime < activeUntil;
+    if (live) {
+      var buf = new Uint8Array(analyser.fftSize); analyser.getByteTimeDomainData(buf);
+      for (var i = 0; i < buf.length; i++) {
+        var x = (i / (buf.length - 1)) * w, y = (buf[i] / 255) * h;
+        if (i === 0) wg.moveTo(x, y); else wg.lineTo(x, y);
+      }
+    } else {
+      for (var px = 0; px <= w; px += 2) {
+        var yy = idleY(px, w, h);
+        if (px === 0) wg.moveTo(px, yy); else wg.lineTo(px, yy);
+      }
+    }
+    wg.stroke();
+  }
+  function waveLoop() { drawWave(); requestAnimationFrame(waveLoop); }
+
+  /* video frames */
+  var N = 8, vc = $('screen'), vg = vc.getContext('2d'), frame = 0, playing = !reduce, timer = null, fps = 8;
+  var strip = $('strip'), thumbs = [];
+  function paintFrame(g, w, h, i) {
+    g.fillStyle = css('--surface2'); g.fillRect(0, 0, w, h);
+    g.fillStyle = css('--line'); g.fillRect(0, h * 0.82, w, h * 0.18);
+    var t = i / (N - 1), x = w * 0.12 + t * w * 0.76, y = h * 0.74 - 4 * t * (1 - t) * h * 0.52, r = h * 0.08;
+    g.fillStyle = css('--video');
+    g.beginPath(); g.arc(x, y, r, 0, Math.PI * 2); g.fill();
+    g.fillStyle = 'rgba(0,0,0,0.18)';
+    g.beginPath(); g.ellipse(x, h * 0.82, r * (1 - 0.3 * Math.sin(t * Math.PI)), r * 0.3, 0, 0, Math.PI * 2); g.fill();
+  }
+  for (var i = 0; i < N; i++) {
+    (function (k) {
+      var b = document.createElement('button'); b.type = 'button'; b.setAttribute('aria-label', 'Frame ' + (k + 1));
+      var c = document.createElement('canvas'); c.width = 96; c.height = 54; b.appendChild(c);
+      b.addEventListener('click', function () { playing = false; $('vidPlay').textContent = 'Play'; stopVid(); frame = k; drawVid(); });
+      strip.appendChild(b); thumbs.push(c);
+    })(i);
+  }
+  function drawVid() {
+    paintFrame(vg, vc.width, vc.height, frame);
+    thumbs.forEach(function (c, k) {
+      paintFrame(c.getContext('2d'), c.width, c.height, k);
+      c.parentNode.classList.toggle('on', k === frame);
+    });
+  }
+  function stopVid() { if (timer) { clearInterval(timer); timer = null; } }
+  function startVid() { stopVid(); timer = setInterval(function () { frame = (frame + 1) % N; drawVid(); }, 1000 / fps); }
+  $('vidPlay').addEventListener('click', function () {
+    playing = !playing;
+    $('vidPlay').textContent = playing ? 'Pause' : 'Play';
+    if (playing) startVid(); else stopVid();
+  });
+  $('fps').addEventListener('input', function () {
+    fps = +this.value; $('fpsOut').textContent = fps + ' fps';
+    if (playing) startVid();
+  });
+
+  /* animation */
+  var orbit = $('orbit'), orbitOn = !reduce;
+  function syncOrbit() { orbit.classList.toggle('paused', !orbitOn); $('orbitToggle').textContent = orbitOn ? 'Pause' : 'Play'; }
+  $('orbitToggle').addEventListener('click', function () { orbitOn = !orbitOn; syncOrbit(); });
+  $('speed').addEventListener('input', function () {
+    orbit.style.setProperty('--speed', this.value); $('speedOut').innerHTML = this.value + '&times;';
+  });
+  if (reduce) {
+    document.querySelectorAll('.ring').forEach(function (r, k) { r.style.transform = 'translate(-50%, -50%) rotate(' + (k * 70) + 'deg)'; });
+  }
+
+  function redrawAll() { drawVid(); drawWave(); }
+  window.addEventListener('resize', function () { sizeWave(); drawWave(); });
+
+  pickPart('cpu');
+  $('vidPlay').textContent = playing ? 'Pause' : 'Play';
+  sizeWave(); drawVid(); syncOrbit();
+  requestAnimationFrame(waveLoop);
+  if (playing) startVid();
+})();
+</script>
+
+</body></html>
